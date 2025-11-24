@@ -1,0 +1,23 @@
+.login-card{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#mobile_no{
+    padding: .3em;
+}
+#countries{
+    padding: .3em;
+}
+
+#submit-btn{
+    margin-top: 5px;
+    width: 100%;
+    background-color: #1C64F2;
+    color: #fff;
+    padding: .4em;
+    border-radius: 6px;
+    border: none;
+}
