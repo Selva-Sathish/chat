@@ -1,4 +1,4 @@
-import '../css/Profiles.css';
+import '../css/ProfileCard.css';
 
 export default function Profiles(){
     const now = new Date();
@@ -11,7 +11,6 @@ export default function Profiles(){
     hours = hours || 12;
 
     let finalTime = `${hours}:${minutes} ${ampm}`;
-
 
     return (
         <>

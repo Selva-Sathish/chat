@@ -1,5 +1,6 @@
 import '../css/Login.css';
 import countries from '../data/countries.json';
+import Button from '../components/Button';
 
 export default function Login(){
     return (
@@ -13,7 +14,7 @@ export default function Login(){
                     } 
                 </select>
                 <input type="tel" name="mobile_no" id="mobile_no" /> <br />
-                <button type='submit' id='submit-btn'>Submit</button>
+                <Button>submit</Button>
             </form>
         </div>
     )
