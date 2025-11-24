@@ -1,10 +1,11 @@
-import type { ReactNode } from "react";
+import "../css/Button.css";
+import "../css/Input.css";
 
-type InputProps = React.HTMLAttributes<HTMLInputElement>;
+type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
-export default function Input({type = "text", ...rest}: InputProps){
+export default function Input( {className, type = "text",  ...rest} : InputProps){
     
     return (
-        <input type="text" />
+        <input type={type} className={(type == "button") ? "btn" : "form-input" } {...rest} />
     )
 }

@@ -1,0 +1,19 @@
+.form-input{
+    padding: 6px 4px;
+    border-radius: 6px;
+    border: 1px solid #7f5fd6;;
+    /* width: 100%; */
+    outline: none;
+    /* background-color: rgb(252, 245, 245); */
+}
+
+
+.form-input:focus{
+    outline: 1px solid #2480e4;
+}
+
+.form-select{
+    padding: 10px ;
+    border-radius: 6px;
+    outline: none;
+}
