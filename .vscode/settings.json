@@ -1,3 +1,7 @@
 {
+    "java.import.gradle.enabled": false,
+    "java.import.maven.enabled": true,
+    "java.referencesCodeLens.enabled": false,
+    "java.search.symbols.maxResults": 500,
     "java.compile.nullAnalysis.mode": "automatic"
 }
