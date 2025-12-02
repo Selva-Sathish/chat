@@ -28,7 +28,7 @@ public class ChatAppApplication implements CommandLineRunner{
 		User user = new User();
 		user.setNumber("9789432788");
 		user.setUserName("sathish");
-		user.setPassword(passwordEncoder.encode("sathihs@123"));
+		user.setPassword(passwordEncoder.encode("sathish@123"));
 		
 		userService.createUser(user);
 	}

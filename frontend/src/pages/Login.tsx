@@ -19,8 +19,6 @@ export default function Login(){
                     </select>
                     <Input /> <br />
                 </div>
-                
-                <p>heelo worldp</p>
                 <Button type='submit'>submit</Button>
             </form>
         </div>

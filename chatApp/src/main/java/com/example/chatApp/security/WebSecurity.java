@@ -1,6 +1,8 @@
 package com.example.chatApp.security;
 
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 // import org.springframework.data.redis.core.RedisTemplate;
@@ -10,6 +12,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,18 +20,24 @@ import org.springframework.security.web.SecurityFilterChain;
 // import com.example.chatApp.cache.RedisUserCache;
 import com.example.chatApp.middleware.JwtAuthFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurity  {
+
+    private final CorsConfigurationSource corsConfiguration;
     
     private final UserDetailService userDetailService;
     private final JwtAuthFilter jwtAuthFilter;
     // private final RedisUserCache redisCache;
 
-    public WebSecurity(UserDetailService userDetailService, JwtAuthFilter jwtAuthFilter){
+    public WebSecurity(UserDetailService userDetailService, JwtAuthFilter jwtAuthFilter, CorsConfigurationSource corsConfiguration){
         this.userDetailService = userDetailService;
         this.jwtAuthFilter = jwtAuthFilter;
+        this.corsConfiguration = corsConfiguration;
     
     }
     
@@ -50,15 +59,31 @@ public class WebSecurity  {
         System.out.println(http);
         http
             .csrf(csrf -> csrf.disable())
+            .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(req -> req
-                .requestMatchers("/login", "/login/**").permitAll()
+                .requestMatchers("/auth/login", "/auth/refresh").permitAll()
                 .anyRequest().authenticated()
             )
-            .formLogin(Customizer.withDefaults())
+            .formLogin(form -> form.disable())
+            .cors(cors -> cors.configurationSource(corsConfiguration()))
             .logout(Customizer.withDefaults())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfiguration(){
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(true);
+        
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
 }
