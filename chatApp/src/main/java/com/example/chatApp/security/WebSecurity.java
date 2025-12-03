@@ -56,12 +56,11 @@ public class WebSecurity  {
     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        System.out.println(http);
         http
             .csrf(csrf -> csrf.disable())
             .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(req -> req
-                .requestMatchers("/auth/login", "/auth/refresh").permitAll()
+                .requestMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form.disable())

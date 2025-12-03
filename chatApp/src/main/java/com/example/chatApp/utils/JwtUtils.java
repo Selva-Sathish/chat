@@ -31,7 +31,7 @@ public class JwtUtils {
                 .subject(username)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiry))
-                .signWith(getSignKey())
+                .signWith(getSignKey(), Jwts.SIG.HS256)
                 .compact();
     }
 
@@ -51,7 +51,7 @@ public class JwtUtils {
 
 	public boolean isTokenValid(String token, UserDetails userDetails) {
 		String username = extractUserName(token);
-        return (userDetails.getUsername().equals(username) && isTokenExpired(token));
+        return (userDetails.getUsername().equals(username) && !isTokenExpired(token));
 	} 
     
     public boolean isTokenExpired(String token){

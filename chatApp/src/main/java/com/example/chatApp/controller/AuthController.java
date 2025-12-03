@@ -48,26 +48,34 @@ public class AuthController {
         
         String accessToken = jwtUtils.generateToken(request.getUsername(), 15 * 60 * 1000);
         String refreshToken = jwtUtils.generateToken(request.getUsername(), 7L * 24 * 60 * 60 * 1000);
-
-        ResponseCookie response = ResponseCookie.from("refreshToken", refreshToken)
+        ResponseCookie responseAt = ResponseCookie.from("at", accessToken)
                                                 .path("/")
                                                 .httpOnly(true)
-                                                .maxAge(Duration.ofDays(7))
+                                                .maxAge(15 * 60)
+                                                .sameSite("Strict")
+                                                .secure(false)
+                                                .build();
+        ResponseCookie responseRt = ResponseCookie.from("rt", refreshToken)
+                                                .path("/auth/refresh")
+                                                .httpOnly(true)
+                                                .maxAge(7 * 24 * 60 * 60)
                                                 .sameSite("Strict")
                                                 .secure(false)
                                                 .build();
     
 
         return ResponseEntity.ok()
-                            .header(HttpHeaders.SET_COOKIE, response.toString())
+                            .header(HttpHeaders.SET_COOKIE, responseAt.toString())
+                            .header(HttpHeaders.SET_COOKIE, responseRt.toString())
                             .body(new TokenResponse(accessToken));
     
     }
     
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(HttpServletRequest request){
+        
         Cookie[] cookies =  request.getCookies();
-
+        System.out.println("cookies : " + cookies );        
         if (cookies == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -81,13 +89,12 @@ public class AuthController {
         if (refrshtoken == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-
-        if(!jwtUtils.isTokenExpired(refrshtoken)){
+        
+        if(jwtUtils.isTokenExpired(refrshtoken)){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }   
 
         String username = jwtUtils.extractUserName(refrshtoken);
-
         String newAccessToken = jwtUtils.generateToken(username, 15 * 60 * 1000);
 
         return ResponseEntity.ok().body(Map.of("accessToken", newAccessToken));

@@ -7,5 +7,5 @@ import com.example.chatApp.models.User;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
-    User findByUserName(String name);
+    User findByUsername(String name);
 }
