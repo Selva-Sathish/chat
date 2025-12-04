@@ -46,8 +46,9 @@ public class AuthController {
             new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
         
-        String accessToken = jwtUtils.generateToken(request.getUsername(), 15 * 60 * 1000);
-        String refreshToken = jwtUtils.generateToken(request.getUsername(), 7L * 24 * 60 * 60 * 1000);
+        String accessToken = jwtUtils.generateToken(request.getUsername(), "at", 1 * 60 * 1000);
+        String refreshToken = jwtUtils.generateToken(request.getUsername(), "rt", 7L * 24 * 60 * 60 * 1000);
+        
         ResponseCookie responseAt = ResponseCookie.from("at", accessToken)
                                                 .path("/")
                                                 .httpOnly(true)
@@ -55,19 +56,19 @@ public class AuthController {
                                                 .sameSite("Strict")
                                                 .secure(false)
                                                 .build();
+
         ResponseCookie responseRt = ResponseCookie.from("rt", refreshToken)
-                                                .path("/auth/refresh")
+                                                .path("/")
                                                 .httpOnly(true)
                                                 .maxAge(7 * 24 * 60 * 60)
                                                 .sameSite("Strict")
                                                 .secure(false)
                                                 .build();
     
-
         return ResponseEntity.ok()
-                            .header(HttpHeaders.SET_COOKIE, responseAt.toString())
-                            .header(HttpHeaders.SET_COOKIE, responseRt.toString())
-                            .body(new TokenResponse(accessToken));
+                    .header(HttpHeaders.SET_COOKIE, responseAt.toString())
+                    .header(HttpHeaders.SET_COOKIE, responseRt.toString())
+                    .body(new TokenResponse(accessToken));
     
     }
     

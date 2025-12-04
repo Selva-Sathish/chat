@@ -24,12 +24,13 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String username, long expiry){
+    public String generateToken(String username, String type, long expiry){
         
         return Jwts
                 .builder()
                 .subject(username)
                 .issuedAt(new Date())
+                .claim("type", type)
                 .expiration(new Date(System.currentTimeMillis() + expiry))
                 .signWith(getSignKey(), Jwts.SIG.HS256)
                 .compact();
@@ -44,6 +45,11 @@ public class JwtUtils {
                 .getPayload();
     }
 
+    public String extractKeyType(String token){
+        
+        return "tokenParser(token).get()";
+    }
+
     public String extractUserName(String token) {
         String username = tokenParser(token).getSubject();
         return username;
@@ -51,11 +57,11 @@ public class JwtUtils {
 
 	public boolean isTokenValid(String token, UserDetails userDetails) {
 		String username = extractUserName(token);
-        return (userDetails.getUsername().equals(username) && !isTokenExpired(token));
+        return (userDetails.getUsername().equals(username) && isTokenExpired(token));
 	} 
     
     public boolean isTokenExpired(String token){
-        return tokenParser(token).getExpiration().before(new Date());
+        return tokenParser(token).getExpiration().after(new Date());
     }
 
 }

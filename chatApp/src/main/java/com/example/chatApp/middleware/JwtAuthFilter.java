@@ -34,11 +34,23 @@ public class JwtAuthFilter extends OncePerRequestFilter{
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		
-                String token = extractAccessTokenFromCookies(request);
+                String token = extractAccessTokenFromCookies(request, "at");
+                String rtToken = extractAccessTokenFromCookies(request, "rt");
+                
                 if(token == null){
                     filterChain.doFilter(request, response);
                     return;
                 }
+
+                
+                // if(jwtUtils.isTokenExpired(token)){
+                //     System.out.println("token expired in the middleware");
+                //     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                //     response.setContentType("application/json");
+                //     response.getWriter().write("{\"error\": \"Token missing\"}");
+                //     return;
+                // }
+                
                 String username = jwtUtils.extractUserName(token);
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                 if(username != null && authentication == null){
@@ -55,10 +67,10 @@ public class JwtAuthFilter extends OncePerRequestFilter{
                 filterChain.doFilter(request, response);
             }
 
-    private String extractAccessTokenFromCookies(HttpServletRequest request) {
+    private String extractAccessTokenFromCookies(HttpServletRequest request, String type) {
         Cookie[] cookies = request.getCookies();
         if(cookies == null) return null;
-        return Arrays.stream(cookies).filter(c -> c.getName().equals("at")).map(Cookie::getValue).findFirst().orElse(null);
+        return Arrays.stream(cookies).filter(c -> c.getName().equals(type)).map(Cookie::getValue).findFirst().orElse(null);
     }
     
 }
