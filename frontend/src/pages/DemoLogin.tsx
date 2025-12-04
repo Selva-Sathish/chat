@@ -1,10 +1,10 @@
 import { useState, type ChangeEvent, type FormEvent } from "react"
-import { useEffect } from "react";
 import request from "../api/axios";
-import { getToken, setToken } from "../service/TokenService";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 export default function DemoLogin(){
     
+    const {setUser, setRole} = useAuth();
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -24,8 +24,10 @@ export default function DemoLogin(){
             password: password
         })
         .then(response => {
-            const data = response.data.token;
-            setToken(data);
+            const data = response.data;
+            // setUser();
+            console.log(data);
+            setRole("user");            
             navigate("/");
         })
         .catch(e => console.error("Network err ", e));

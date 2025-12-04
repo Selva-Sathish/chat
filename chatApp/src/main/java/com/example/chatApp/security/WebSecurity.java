@@ -28,17 +28,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class WebSecurity  {
 
-    private final CorsConfigurationSource corsConfiguration;
     
     private final UserDetailService userDetailService;
     private final JwtAuthFilter jwtAuthFilter;
     // private final RedisUserCache redisCache;
 
-    public WebSecurity(UserDetailService userDetailService, JwtAuthFilter jwtAuthFilter, CorsConfigurationSource corsConfiguration){
+    public WebSecurity(UserDetailService userDetailService, JwtAuthFilter jwtAuthFilter){
         this.userDetailService = userDetailService;
         this.jwtAuthFilter = jwtAuthFilter;
-        this.corsConfiguration = corsConfiguration;
-    
     }
     
     @Bean

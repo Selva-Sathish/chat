@@ -45,9 +45,8 @@ public class JwtUtils {
                 .getPayload();
     }
 
-    public String extractKeyType(String token){
-        
-        return "tokenParser(token).get()";
+    public String extractTokenType(String token){
+        return tokenParser(token).get("type", String.class);
     }
 
     public String extractUserName(String token) {

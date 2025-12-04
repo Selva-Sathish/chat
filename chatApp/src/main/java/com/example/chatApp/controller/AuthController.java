@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.chatApp.dto.LoginRequest;
 import com.example.chatApp.dto.TokenResponse;
+import com.example.chatApp.models.User;
+import com.example.chatApp.service.UserService;
 import com.example.chatApp.security.UserDetailService;
 
 import com.example.chatApp.utils.JwtUtils;
@@ -30,14 +33,17 @@ public class AuthController {
     private final UserDetailService userDetailService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final UserService userService;
 
     public AuthController(UserDetailService userDetailService,
              AuthenticationManager authenticationManager,
-             JwtUtils jwtUtils
+             JwtUtils jwtUtils,
+             UserService userService
         ){
         this.userDetailService = userDetailService;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
@@ -64,11 +70,11 @@ public class AuthController {
                                                 .sameSite("Strict")
                                                 .secure(false)
                                                 .build();
-    
+        
         return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, responseAt.toString())
                     .header(HttpHeaders.SET_COOKIE, responseRt.toString())
-                    .body(new TokenResponse(accessToken));
+                    .body(userService.getByUserName(request.getUsername()));
     
     }
     
