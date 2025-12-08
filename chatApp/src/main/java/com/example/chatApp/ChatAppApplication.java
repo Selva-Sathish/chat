@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.example.chatApp.enums.Role;
 import com.example.chatApp.models.User;
 import com.example.chatApp.service.UserService;
 
@@ -23,13 +24,12 @@ public class ChatAppApplication implements CommandLineRunner{
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
-		
+	public void run(String... args) throws Exception {		
 		User user = new User();
 		user.setNumber("9789432788");
 		user.setUsername("sathish");
 		user.setPassword(passwordEncoder.encode("sathish@123"));
-		
+		user.setRole(Role.ADMIN);
 		userService.createUser(user);
 	}
 

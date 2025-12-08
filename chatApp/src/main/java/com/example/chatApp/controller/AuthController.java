@@ -18,8 +18,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.chatApp.dto.LoginRequest;
-import com.example.chatApp.dto.TokenResponse;
+import com.example.chatApp.dto.UserReponse;
+import com.example.chatApp.mapper.UserMapper;
 import com.example.chatApp.models.User;
+import com.example.chatApp.repo.UserRepo;
 import com.example.chatApp.service.UserService;
 import com.example.chatApp.security.UserDetailService;
 
@@ -71,11 +73,13 @@ public class AuthController {
                                                 .secure(false)
                                                 .build();
         
+        User userDate = userService.getByUserName(request.getUsername());
+        UserReponse reponse = UserMapper.toResReponse(userDate);
+
         return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, responseAt.toString())
                     .header(HttpHeaders.SET_COOKIE, responseRt.toString())
-                    .body(userService.getByUserName(request.getUsername()));
-    
+                    .body(reponse);
     }
     
     @PostMapping("/refresh")
@@ -102,9 +106,20 @@ public class AuthController {
         }   
 
         String username = jwtUtils.extractUserName(refrshtoken);
-        String newAccessToken = jwtUtils.generateToken(username, 15 * 60 * 1000);
+        
+        User currUser = userService.getByUserName(username);
+        
+        String newAccessToken = jwtUtils.generateToken(username, "at", 15 * 60 * 1000);
+        
+        ResponseCookie responseCookie = ResponseCookie.from("at", newAccessToken)
+                                            .maxAge(15*60)
+                                            .secure(false)
+                                            .httpOnly(true)
+                                            .sameSite("Strict")
+                                            .path("/")
+                                            .build();
 
-        return ResponseEntity.ok().body(Map.of("accessToken", newAccessToken));
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(UserMapper.toResReponse(currUser));
     }
 
 }

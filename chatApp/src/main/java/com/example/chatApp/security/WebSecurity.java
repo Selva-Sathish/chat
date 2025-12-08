@@ -19,6 +19,9 @@ import org.springframework.security.web.SecurityFilterChain;
 
 // import com.example.chatApp.cache.RedisUserCache;
 import com.example.chatApp.middleware.JwtAuthFilter;
+
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -59,6 +62,16 @@ public class WebSecurity  {
             .authorizeHttpRequests(req -> req
                 .requestMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("unauthorized");
+                })
+                .accessDeniedHandler((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getWriter().write("FORBIDDEN");
+                })
             )
             .formLogin(form -> form.disable())
             .cors(cors -> cors.configurationSource(corsConfiguration()))

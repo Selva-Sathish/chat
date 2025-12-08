@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
+import request from "../api/axios";
 
 interface AuthContextType {
   user: string | null;
@@ -19,6 +20,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     role,
     setRole,
   };
+
+  async function refreshToken() {
+      request
+            .post("/auth/refresh")
+            .then(response => response.data)
+            
+  }
   return (
         <AuthContext.Provider value={{ user, setUser, role, setRole }}>
             {children}

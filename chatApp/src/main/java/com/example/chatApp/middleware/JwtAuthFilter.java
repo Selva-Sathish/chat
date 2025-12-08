@@ -3,6 +3,7 @@ package com.example.chatApp.middleware;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,7 +32,7 @@ public class JwtAuthFilter extends OncePerRequestFilter{
     }
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,@NonNull FilterChain filterChain)
 			throws ServletException, IOException {
 		
                 String token = extractAccessTokenFromCookies(request, "at");
@@ -42,14 +43,6 @@ public class JwtAuthFilter extends OncePerRequestFilter{
                     return;
                 }
 
-                
-                // if(jwtUtils.isTokenExpired(token)){
-                //     System.out.println("token expired in the middleware");
-                //     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                //     response.setContentType("application/json");
-                //     response.getWriter().write("{\"error\": \"Token missing\"}");
-                //     return;
-                // }
                 
                 String username = jwtUtils.extractUserName(token);
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
