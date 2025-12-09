@@ -55,13 +55,13 @@ public class AuthController {
             new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
         
-        String accessToken = jwtUtils.generateToken(request.getUsername(), "at", 15 * 60 * 1000);
+        String accessToken = jwtUtils.generateToken(request.getUsername(), "at", 3 * 60 * 1000);
         String refreshToken = jwtUtils.generateToken(request.getUsername(), "rt", 7L * 24 * 60 * 60 * 1000);
         
         ResponseCookie responseAt = ResponseCookie.from("at", accessToken)
                                                 .path("/")
                                                 .httpOnly(true)
-                                                .maxAge(15 * 60)
+                                                .maxAge(3 * 60)
                                                 .sameSite("Strict")
                                                 .secure(false)
                                                 .build();
@@ -99,17 +99,16 @@ public class AuthController {
             .findFirst()
             .orElse(null);
         
-        System.out.println(refrshtoken);
+        
 
         if (refrshtoken == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         
-        if(jwtUtils.isTokenExpired(refrshtoken)){
+        if(!jwtUtils.isTokenNotExpired(refrshtoken)){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }   
 
-        System.out.println("after checking the token expiration ");
         String username = jwtUtils.extractUserName(refrshtoken);
         
         User currUser = userService.getByUserName(username);
@@ -129,7 +128,6 @@ public class AuthController {
 
     @PostMapping("me")
     public ResponseEntity<?> me(Authentication auth) {
-        // System.out.println((UserDetails)auth.getDetails() + "userdetails");
         
         if (auth == null) {
             return ResponseEntity.status(401).build();
@@ -137,7 +135,6 @@ public class AuthController {
 
         String username = auth.getName();
         User user = userService.getByUserName(username);
-        System.out.println(username + "authme  ------>");        
         return ResponseEntity.ok().body(UserMapper.toResReponse(user));
     }
     

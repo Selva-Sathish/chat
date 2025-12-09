@@ -14,7 +14,22 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
-   
+  
+  async function fetchUser(){
+      try{
+          const res = await request.post("/auth/me");
+          setUser(res.data.username);
+          setRole(res.data.role);
+      }
+      catch (err){
+          console.error(err);
+      }
+  }
+
+  useEffect(() => {
+      fetchUser();
+  }, []);
+
   return (
     <AuthContext.Provider value={{ user, role, setRole, setUser }}>
       {children}

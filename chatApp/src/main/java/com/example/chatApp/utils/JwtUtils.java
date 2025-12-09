@@ -1,5 +1,6 @@
 package com.example.chatApp.utils;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
@@ -56,10 +57,10 @@ public class JwtUtils {
 
 	public boolean isTokenValid(String token, UserDetails userDetails) {
 		String username = extractUserName(token);
-        return (userDetails.getUsername().equals(username) && isTokenExpired(token));
+        return (userDetails.getUsername().equals(username) && isTokenNotExpired(token));
 	} 
     
-    public boolean isTokenExpired(String token){
+    public boolean isTokenNotExpired(String token){
         return tokenParser(token).getExpiration().after(new Date());
     }
 
