@@ -13,7 +13,7 @@ public class Messages {
     private Long conversationID;
 
     @Field(name = "sender_id")
-    private Long senderID;
+    private Long senderId;
 
     private String content;
     
@@ -24,4 +24,6 @@ public class Messages {
 
     @Field(name = "created_at")
     private LocalDateTime createdAt;
+
+
 }
