@@ -23,6 +23,7 @@ import com.example.chatApp.mapper.UserMapper;
 import com.example.chatApp.models.User;
 import com.example.chatApp.repo.UserRepo;
 import com.example.chatApp.service.UserService;
+import com.example.chatApp.security.CustomUserDetails;
 import com.example.chatApp.security.UserDetailService;
 
 import com.example.chatApp.utils.JwtUtils;
@@ -54,7 +55,7 @@ public class AuthController {
             new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
         
-        String accessToken = jwtUtils.generateToken(request.getUsername(), "at", 1 * 60 * 1000);
+        String accessToken = jwtUtils.generateToken(request.getUsername(), "at", 15 * 60 * 1000);
         String refreshToken = jwtUtils.generateToken(request.getUsername(), "rt", 7L * 24 * 60 * 60 * 1000);
         
         ResponseCookie responseAt = ResponseCookie.from("at", accessToken)
@@ -85,18 +86,21 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(HttpServletRequest request){
         
-        Cookie[] cookies =  request.getCookies();
-        System.out.println("cookies : " + cookies );        
+        Cookie[] cookies =  request.getCookies();   
+
         if (cookies == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        
 
         String refrshtoken = Arrays.stream(cookies)
-            .filter(e -> "refreshToken".equals(e.getName()))
+            .filter(e -> "rt".equals(e.getName()))
             .map(Cookie::getValue)
             .findFirst()
             .orElse(null);
         
+        System.out.println(refrshtoken);
+
         if (refrshtoken == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -105,14 +109,15 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }   
 
+        System.out.println("after checking the token expiration ");
         String username = jwtUtils.extractUserName(refrshtoken);
         
         User currUser = userService.getByUserName(username);
         
-        String newAccessToken = jwtUtils.generateToken(username, "at", 15 * 60 * 1000);
+        String newAccessToken = jwtUtils.generateToken(username, "at", 10 * 60 * 1000);
         
         ResponseCookie responseCookie = ResponseCookie.from("at", newAccessToken)
-                                            .maxAge(15*60)
+                                            .maxAge(10*60)
                                             .secure(false)
                                             .httpOnly(true)
                                             .sameSite("Strict")
@@ -122,4 +127,18 @@ public class AuthController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(UserMapper.toResReponse(currUser));
     }
 
+    @PostMapping("me")
+    public ResponseEntity<?> me(Authentication auth) {
+        // System.out.println((UserDetails)auth.getDetails() + "userdetails");
+        
+        if (auth == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        String username = auth.getName();
+        User user = userService.getByUserName(username);
+        System.out.println(username + "authme  ------>");        
+        return ResponseEntity.ok().body(UserMapper.toResReponse(user));
+    }
+    
 }

@@ -3,5 +3,6 @@
     "java.import.maven.enabled": true,
     "java.referencesCodeLens.enabled": false,
     "java.search.symbols.maxResults": 500,
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.configuration.updateBuildConfiguration": "automatic"
 }

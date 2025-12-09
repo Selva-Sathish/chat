@@ -1,10 +1,10 @@
-import { useState, type ChangeEvent, type FormEvent } from "react"
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react"
 import request from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 export default function DemoLogin(){
     
-    const {setUser, setRole} = useAuth();
+    const {user, role, setUser, setRole} = useAuth();
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -12,6 +12,13 @@ export default function DemoLogin(){
     function handleUsername(e: ChangeEvent<HTMLInputElement>){
         setUsername(e.target.value);
     }
+
+    useEffect(() => {
+        if(user && role){
+            console.log(user, role , "inside the login page")
+            navigate("/");
+        }
+    }, [user, role])
 
     function handlePassword(e: ChangeEvent<HTMLInputElement>){
         setPassword(e.target.value);
@@ -25,8 +32,7 @@ export default function DemoLogin(){
         })
         .then(response => {
             const data = response.data;
-            // setUser();
-            console.log(data);
+            setUser(data.username);
             setRole("user");            
             navigate("/");
         })
